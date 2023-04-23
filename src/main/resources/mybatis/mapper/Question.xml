@@ -3,9 +3,23 @@
 <mapper namespace="com.example.question.db.mapper.QuestionMapper">
 
     <select id="findByAllList" resultType="com.example.question.db.entity.QuestionEntity">
-        SELECT *
+        SELECT FAQ_ID
+             , QUESTION
+             , ANSWER
+             , VIEW_ORDER
         FROM TB_FAQ
-        ORDER BY DELETED_AT, VIEW_ORDER DESC, CREATED_AT;
+        WHERE DELETED_AT IS NULL
+        ORDER BY DELETED_AT, VIEW_ORDER DESC, CREATED_AT
+    </select>
+
+    <select id="findByDeleteList" resultType="com.example.question.db.entity.QuestionEntity">
+        SELECT FAQ_ID
+             , QUESTION
+             , ANSWER
+             , VIEW_ORDER
+        FROM TB_FAQ
+        WHERE DELETED_AT IS NOT NULL
+        ORDER BY DELETED_AT, VIEW_ORDER DESC, CREATED_AT
     </select>
 
     <select id="findByViewList" resultType="com.example.question.db.entity.QuestionEntity">

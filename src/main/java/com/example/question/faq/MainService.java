@@ -1,14 +1,12 @@
-package com.example.question.main;
+package com.example.question.faq;
 
 import com.example.question.db.entity.QuestionEntity;
 import com.example.question.db.mapper.QuestionMapper;
 import com.example.question.exception.ServiceErrorCode;
 import com.example.question.exception.ServiceException;
-import com.example.question.main.request.QuestionCreateRequest;
-import com.example.question.main.request.QuestionUpdateRequest;
-import com.example.question.main.response.QuestionAdminResponse;
-import com.example.question.main.response.QuestionServiceResponse;
-import com.example.question.main.response.QuestionServiceSelectResponse;
+import com.example.question.faq.request.QuestionCreateRequest;
+import com.example.question.faq.request.QuestionUpdateRequest;
+import com.example.question.faq.response.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,11 +21,21 @@ import java.util.stream.Collectors;
 public class MainService {
 
     private final QuestionMapper questionMapper;
-    
-    //관리자조회(노출여부, 삭제여부 상관없이 출력)
+
+    //관리자 조회(노출여부 상관없이 출력)
     @Transactional(readOnly = true)
     public List<QuestionAdminResponse> findByAllList(){
+
         List<QuestionEntity> list = questionMapper.findByAllList();
+        return list.stream()
+                .map(QuestionAdminResponse::new)
+                .collect(Collectors.toList());
+    }
+    //관리자 조회(삭제처리만 출력)
+    @Transactional(readOnly = true)
+    public List<QuestionAdminResponse> findByDeleteList(){
+
+        List<QuestionEntity> list = questionMapper.findByDeleteList();
         return list.stream()
                 .map(QuestionAdminResponse::new)
                 .collect(Collectors.toList());
@@ -55,20 +63,24 @@ public class MainService {
     }
     //등록
     @Transactional
-    public void createQuestion(QuestionCreateRequest questionCreateRequest){
+    public QuestionCreateResponse createQuestion(QuestionCreateRequest questionCreateRequest){
 
         log.info("> 자주하는질문등록 요청 시작 [ENTITY] {}:", questionCreateRequest);
         questionMapper.createQuestion(questionCreateRequest);
         log.info("> 자주하는질문등록 요청 종료 [ENTITY] {}:", questionCreateRequest);
+        QuestionCreateResponse questionCreateResponse = new QuestionCreateResponse(questionCreateRequest);
+
+        return questionCreateResponse;
     }
 
     //질문&답변 수정
     @Transactional
-    public void updateQuestion(QuestionUpdateRequest questionUpdateRequest){
+    public QuestionUpdateResponse updateQuestion(QuestionUpdateRequest questionUpdateRequest){
 
         log.info("> 자주하는질문수정 요청 시작 [ENTITY] {}:", questionUpdateRequest);
         questionMapper.updateQuestion(questionUpdateRequest);
         log.info("> 자주하는질문등록 요청 종료 [ENTITY] {}:", questionUpdateRequest);
+        return new QuestionUpdateResponse(questionUpdateRequest);
     }
     //순서 수정
     @Transactional

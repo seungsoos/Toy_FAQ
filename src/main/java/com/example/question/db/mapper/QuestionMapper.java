@@ -1,8 +1,8 @@
 package com.example.question.db.mapper;
 
 import com.example.question.db.entity.QuestionEntity;
-import com.example.question.main.request.QuestionCreateRequest;
-import com.example.question.main.request.QuestionUpdateRequest;
+import com.example.question.faq.request.QuestionCreateRequest;
+import com.example.question.faq.request.QuestionUpdateRequest;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -11,8 +11,10 @@ import java.util.List;
 @Mapper
 public interface QuestionMapper {
 
-    //관리자조회(노출여부, 삭제여부 상관없이 출력)
+    //관리자 조회(노출여부 상관없이 출력)
     List<QuestionEntity> findByAllList();
+    //관리자 조회(삭제처리만 출력)
+    List<QuestionEntity> findByDeleteList();
     //사용자조회(노출설정 및 미삭제만 출력)
     List<QuestionEntity> findByViewList();
     //읽기

@@ -1,12 +1,13 @@
-package com.example.question.main;
+package com.example.question.faq;
 
 import com.example.question.common.ApiStatusCode;
 import com.example.question.common.RootResponse;
-import com.example.question.main.request.QuestionCreateRequest;
-import com.example.question.main.request.QuestionUpdateRequest;
-import com.example.question.main.response.QuestionAdminResponse;
-import com.example.question.main.response.QuestionServiceResponse;
-import com.example.question.main.response.QuestionServiceSelectResponse;
+import com.example.question.faq.request.QuestionCreateRequest;
+import com.example.question.faq.request.QuestionUpdateRequest;
+import com.example.question.faq.response.QuestionAdminResponse;
+import com.example.question.faq.response.QuestionCreateResponse;
+import com.example.question.faq.response.QuestionServiceResponse;
+import com.example.question.faq.response.QuestionServiceSelectResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -22,11 +23,18 @@ public class MainController {
 
     private final MainService mainService;
 
-    //관리자 조회(노출여부, 삭제여부 상관없이 출력)
+    //관리자 조회(노출여부 상관없이 출력)
     @GetMapping("/admin")
-    public List<QuestionAdminResponse> adminReadList(
+    public List<QuestionAdminResponse> adminList(
     ){
         List<QuestionAdminResponse> list = mainService.findByAllList();
+        return list;
+    }
+    //관리자 조회(삭제처리만 출력)
+    @GetMapping("/admin/delete")
+    public List<QuestionAdminResponse> adminDeleteList(
+    ){
+        List<QuestionAdminResponse> list = mainService.findByDeleteList();
         return list;
     }
     //사용자 조회(노출설정 및 미삭제만 출력)
@@ -46,12 +54,12 @@ public class MainController {
     }
     // 등록
     @PostMapping("/insert")
-    public RootResponse<Object> create(
+    public RootResponse<QuestionCreateResponse> create(
             @RequestBody
             @Valid QuestionCreateRequest questionCreateRequest
     ) {
-        mainService.createQuestion(questionCreateRequest);
-        return new RootResponse<>(ApiStatusCode.OK, "OK", null);
+        QuestionCreateResponse question = mainService.createQuestion(questionCreateRequest);
+        return new RootResponse<>(ApiStatusCode.OK, "OK", question);
     }
     // 질문&답변 수정
     @PatchMapping("/update/fag")
@@ -81,7 +89,7 @@ public class MainController {
         return new RootResponse<>(ApiStatusCode.OK, "OK", null);
     }
     // 삭제
-    @DeleteMapping("/delete/{faq_id}")
+    @DeleteMapping("/question/{faq_id}")
     public RootResponse<Object> delete(
             @PathVariable("faq_id") int faq_id){
         mainService.deleteQuestion(faq_id);
